@@ -2,15 +2,73 @@ import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
 
-/**
- * Reads lines from the given input txt file.
- */
-fun readInput(name: String) = File("src", "$name.txt")
-    .readLines()
+data class AoCTask(val day: String) {
+
+    /**
+     * Reads lines from the given input txt file.
+     */
+    fun readInput(name: String) = File("src/$day", "$name.txt").readLines()
+
+    val input by lazy {
+        readInput(day.replaceFirstChar { it.uppercase() })
+    }
+
+    val testInput by lazy {
+        readInput(day.replaceFirstChar { it.uppercase() } + "_test")
+    }
+
+    fun readTestInput(n: Int) = readInput(day.replaceFirstChar { it.uppercase() } + "_test$n")
+
+}
 
 /**
  * Converts string to md5 hash.
  */
-fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteArray()))
-    .toString(16)
-    .padStart(32, '0')
+fun String.md5(): String = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteArray())).toString(16)
+
+data class Vector2(val x: Int = 0, val y: Int = 0) {
+    override fun toString(): String {
+        return "($x,$y)"
+    }
+
+    companion object {
+        val ZERO = Vector2(0, 0)
+        val LEFT = Vector2(-1, 0)
+        val RIGHT = Vector2(1, 0)
+        val UP = Vector2(0, -1)
+        val DOWN = Vector2(0, 1)
+    }
+}
+
+operator fun Vector2.plus(other: Vector2) = Vector2(x + other.x, y + other.y)
+operator fun Vector2.minus(other: Vector2) = Vector2(x - other.x, y - other.y)
+
+data class Vector3(val x: Int = 0, val y: Int = 0, val z: Int = 0) {
+    override fun toString(): String {
+        return "($x,$y,$z)"
+    }
+
+    val elements: List<Int> get() = listOf(x, y, z)
+}
+
+operator fun Vector3.plus(other: Vector3) = Vector3(x + other.x, y + other.y, z + other.z)
+operator fun Vector3.minus(other: Vector3) = Vector3(x - other.x, y - other.y, z - other.z)
+
+operator fun Vector3.unaryMinus() = Vector3(-x, -y, -z)
+
+fun Int.squared(): Long = this.toLong() * this.toLong()
+
+fun Vector3.squaredLength(): Long = x.squared() + y.squared() + z.squared()
+
+fun <T> List<T>.permutations(): List<List<T>> {
+    return if (size == 1) {
+        listOf(this)
+    } else {
+        flatMapIndexed { index, it ->
+            val subList = this.slice(indices.toList().filter { i -> i != index })
+            subList.permutations().map { perm ->
+                listOf(it) + perm
+            }
+        }
+    }
+}
