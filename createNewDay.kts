@@ -45,7 +45,7 @@ val dir = File("src/day$paddedDay")
 if (dir.exists()) {
     println("Day $day is already set up.")
 } else {
-    println(" - Copying template files")
+    println("- Copying template files")
     val templateDir = File("src/day00")
     templateDir.copyRecursively(dir)
     val url = "https://adventofcode.com/2022/day/${day}"
@@ -80,11 +80,16 @@ if (dir.exists()) {
             targetFile
                 .resolve("Day${paddedDay}_test.txt")
                 .writeText(testInput)
+        } else {
+            println("Failed grabbing test input: Couldn't find <pre></pre> tags")
+            println("Please grab it manually")
         }
     } catch (e: Exception) {
         println("Failed grabbing test input: $e")
-        println("Please grab it manually: $url")
+        println("Please grab it manually")
     }
 
-    println("DONE preparing day $day for you. Happy Kotlin!")
+    println("DONE preparing day $day for you.")
+    println("You find the days instructions here: $url")
+    println("Happy Kotlin!")
 }
