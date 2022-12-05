@@ -74,9 +74,10 @@ if (dir.exists()) {
     try {
         println("- Grabbing test input for day $day")
         val html = getPageContent(URL(url))
-        val match = "<pre>(.*)?</pre>".toRegex(RegexOption.DOT_MATCHES_ALL).find(html)
+        val parts = html.split("(<pre><code>)|(</code></pre>)".toRegex())
+        val match = parts.getOrNull(1)
         if (match != null) {
-            val testInput = match.groupValues[0].replace("<.*?>".toRegex(), "").trim()
+            val testInput = match.replace("<.*?>".toRegex(), "").trimEnd('\n')
             targetFile
                 .resolve("Day${paddedDay}_test.txt")
                 .writeText(testInput)
