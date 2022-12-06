@@ -4,21 +4,34 @@ import java.security.MessageDigest
 
 data class AoCTask(val day: String) {
 
+    val workingDir = File("src/$day")
+    val inputFileName = day.replaceFirstChar { it.uppercase() }
+
     /**
      * Reads lines from the given input txt file.
      */
-    fun readInput(name: String) = File("src/$day", "$name.txt").readLines()
+    fun readInput(name: String): List<String> {
+        return workingDir.resolve("$name.txt").readLines()
+    }
+
+    fun <T> processInput(name: String, block: (input: Sequence<String>) -> T): T {
+        return workingDir.resolve("$name.txt").useLines {
+            block(it)
+        }
+    }
 
     val input by lazy {
-        readInput(day.replaceFirstChar { it.uppercase() })
+        readInput(inputFileName)
     }
 
     val testInput by lazy {
-        readInput(day.replaceFirstChar { it.uppercase() } + "_test")
+        readInput(inputFileName + "_test")
     }
+    fun readTestInput(n: Int) = readInput(inputFileName + "_test$n")
 
-    fun readTestInput(n: Int) = readInput(day.replaceFirstChar { it.uppercase() } + "_test$n")
-
+    fun <T> withInput(block: (Sequence<String>) -> T): T {
+        return processInput(inputFileName, block)
+    }
 }
 
 /**
